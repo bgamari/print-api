@@ -171,14 +171,10 @@ reportModuleDecls usePublicOnly userIgnoredModules unitId moduleName
               & Maybe.fromJust
               & mi_docs
       case mDocs of
-        Nothing -> pure empty
-        Just docs -> do
-          if usePublicOnly
-            then
-              if isVisible docs
-                then extractModuleDeclarations modl mod_info
-                else pure empty
-            else extractModuleDeclarations modl mod_info
+        Just docs
+          | usePublicOnly
+          , not (isVisible docs) -> pure empty
+        _ -> extractModuleDeclarations modl mod_info
 
 extractModuleDeclarations :: Module -> ModuleInfo -> Ghc SDoc
 extractModuleDeclarations modl mod_info = do
